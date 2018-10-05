@@ -1,10 +1,10 @@
-#!/homes/pk3115/virtualEnvs/py3/bin/python
+#!/usr/bin/python3
 
-import requests
-import re
-import html
 from datetime import datetime
+import html
 import json
+import re
+import urllib.request
 
 URL = 'https://blog.acolyer.org/feed/'
 ITEM_PARSE_PATTERN = re.compile(r'<item>.+?<title>(?P<titleText>.+?)</title>.+?<link>(?P<redirectionUrl>.+?)</link>.+?<pubDate>(?P<updateDate>.+?)</pubDate>.+?<guid.+?>(?P<uid>.+?)</guid>.+?<content.+?</p>.+?<p>(?P<mainText>.+?)<h3>', re.DOTALL)
@@ -12,10 +12,9 @@ FEED_DATETIME_FORMAT = '%a, %d %b %Y %H:%M:%S %z'
 OUTPUT_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.0Z'
 
 def get_rss_feed():
-    request = requests.get(URL)
-    if request.ok:
-        return request.text
-    raise ConnectionError('Feed response not OK')
+    request = urllib.request.urlopen(URL)
+    response = request.read().decode()
+    return response
 
 def get_latest_paper_info(xml):
     match = ITEM_PARSE_PATTERN.search(xml[:100000])
